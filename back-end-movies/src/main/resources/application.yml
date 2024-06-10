@@ -1,0 +1,31 @@
+## Configuracion de Spring
+spring:
+  application:
+    name: ms-movies
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3310/movies_db} #Actualizar con el valor de tu despliegue local de MySQL.
+    driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
+    username: ${DB_USER:root} #Actualizar con el valor de tu usuario.
+    password: ${DB_PASSWORD:root} #Actualizar con el valor de tu contraseña de root.
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect.storage_engine: innodb
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+## Configuracion de Instancia 
+server:
+  port: 8088
+
+## Configuracion del cliente de Eureka
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true
+    hostname: ms-movies

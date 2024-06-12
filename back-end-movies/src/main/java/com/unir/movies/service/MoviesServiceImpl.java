@@ -91,7 +91,7 @@ public class MoviesServiceImpl implements MoviesService {
                 JsonMergePatch jsonMergePatch = JsonMergePatch.fromJson(objectMapper.readTree(updateRequest));
                 JsonNode target = jsonMergePatch.apply(objectMapper.readTree(objectMapper.writeValueAsString(movie)));
                 Movie patched = objectMapper.treeToValue(target, Movie.class);
-                repository.save(movie);
+                repository.save(patched);
                 return patched;
             } catch (JsonProcessingException | JsonPatchException e) {
                 log.error("Error updating movie {}", movieId, e);

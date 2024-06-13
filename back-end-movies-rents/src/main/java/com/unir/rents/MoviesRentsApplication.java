@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class MoviesRentsApplication {
 
+
   @LoadBalanced
   @Bean
   public RestTemplate restTemplate() {

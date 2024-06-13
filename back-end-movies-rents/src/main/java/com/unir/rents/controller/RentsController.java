@@ -1,6 +1,7 @@
 package com.unir.rents.controller;
 
 import com.unir.rents.model.db.Rent;
+import com.unir.rents.model.request.ReturnRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,18 @@ public class RentsController {
 
         if (created != null) {
             return ResponseEntity.ok(created);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/returns")
+    public ResponseEntity<Rent> createRent(@RequestBody @Valid ReturnRequest request) { //Se valida con Jakarta Validation API
+
+        Rent rent = service.returnRented(request);
+
+        if (rent != null) {
+            return ResponseEntity.ok(rent);
         } else {
             return ResponseEntity.badRequest().build();
         }

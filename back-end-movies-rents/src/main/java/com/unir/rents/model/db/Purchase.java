@@ -4,18 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
 
 @Entity
-@Table(name = "rents")
+@Table(name = "purchases")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @ToString
-public class Rent {
+public class Purchase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +21,6 @@ public class Rent {
 
     @Column(name = "movie_id")
     private Long movieId;
-
-    @Column(name = "rented_on")
-    private Timestamp rentedOn;
-
-    @Column(name = "returned_on")
-    private Timestamp returnedOn;
 
     @Column(name = "customer_name")
     private String customerName;

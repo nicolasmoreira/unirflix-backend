@@ -1,11 +1,16 @@
 package com.unir.rents.service;
 
 import com.unir.rents.data.RentJpaRepository;
+import com.unir.rents.exceptions.MovieAlreadyRentedException;
+import com.unir.rents.exceptions.MovieAlreadyReturnedException;
+import com.unir.rents.exceptions.RentNotFoundException;
 import com.unir.rents.model.Movie;
 import com.unir.rents.model.db.Rent;
+import com.unir.rents.model.request.ReturnRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -25,12 +30,34 @@ public class RentsServiceImpl implements RentsService {
   @Override
   public Rent createRent(RentRequest request) {
 
-    List<Movie> movies = request.getMovies().stream().map(moviesFacade::getMovie).filter(Objects::nonNull).toList();
+    Movie movie = moviesFacade.getMovie(String.valueOf(request.getMovieId()));
 
-    if(movies.size() != request.getMovies().size() || movies.stream().anyMatch(movie -> !movie.getVisible())) {
-      return null;
+    // Can't rent again without returning it first
+    if( repository.existsByCustomerNameAndMovieIdAndReturnedOnIsNull(request.getCustomerName(), movie.getId())) {
+      throw new MovieAlreadyRentedException("The movie is already rented and has not been returned.");
     } else {
-      Rent rent = Rent.builder().movies(movies.stream().map(Movie::getId).collect(Collectors.toList())).build();
+      Rent rent = new Rent();
+      rent.setCustomerName(request.getCustomerName());
+      rent.setMovieId(movie.getId());
+      rent.setRentedOn(new Timestamp(System.currentTimeMillis()));
+      repository.save(rent);
+      return rent;
+    }
+  }
+
+  @Override
+  public Rent returnRented(ReturnRequest request) {
+
+    Rent rent = repository.findById(request.getRentId()).orElse(null);
+
+    if (rent == null)
+      throw new RentNotFoundException("Rent not found.");
+
+    // Can't rent again without returning it first
+    if( repository.existsByIdAndReturnedOnIsNotNull(request.getRentId()) ) {
+      throw new MovieAlreadyReturnedException("The movie is already returned.");
+    } else {
+      rent.setReturnedOn(new Timestamp(System.currentTimeMillis()));
       repository.save(rent);
       return rent;
     }
